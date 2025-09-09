@@ -54,7 +54,6 @@ public class PostController {
         return "redirect:/posts/%d".formatted(post.getId()); // 주소창을 바꿔
     }
 
-
     record PostModifyForm(
             @NotBlank(message = "01-title-제목을 입력해주세요.")
             @Size(min = 2, max = 10, message = "02-title-제목은 2글자 이상 10글자 이하로 입력해주세요.")
