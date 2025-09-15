@@ -4,6 +4,7 @@ import com.rest1.domain.post.post.dto.PostDto;
 import com.rest1.domain.post.post.entity.Post;
 import com.rest1.domain.post.post.service.PostService;
 import com.rest1.global.rsData.RsData;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,8 +24,9 @@ public class ApiV1PostController {
 
     @GetMapping
     @Transactional(readOnly = true)
+    @Operation(summary = "다건 조회")
     public List<PostDto> getItems() {
-        return postService.findAll().stream()
+        return postService.findAll().reversed().stream()
                 .map(PostDto::new)
                 .toList();
     }
@@ -32,15 +34,19 @@ public class ApiV1PostController {
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
+    @Operation(summary = "단건 조회")
     public PostDto getItem(
             @PathVariable Long id
     ) {
+
         Post post = postService.findById(id).get();
         return new PostDto(post);
+
     }
 
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "글 삭제")
     public RsData<Void> deleteItem(
             @PathVariable Long id
     ) {
@@ -66,12 +72,13 @@ public class ApiV1PostController {
     }
 
     record PostWriteResBody(
-            PostDto postDto,
-            long totalCount
-    ) {}
+            PostDto postDto
+    ) {
+    }
 
     @PostMapping
     @Transactional
+    @Operation(summary = "글 등록")
     public RsData<PostWriteResBody> createItem(
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
@@ -84,8 +91,7 @@ public class ApiV1PostController {
                 "201-1",
                 "%d번 게시물이 생성되었습니다.".formatted(post.getId()),
                 new PostWriteResBody(
-                        new PostDto(post),
-                        totalCount
+                        new PostDto(post)
                 )
         );
     }
@@ -104,10 +110,12 @@ public class ApiV1PostController {
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "글 수정")
     public RsData<Void> modifyItem(
             @PathVariable Long id,
             @RequestBody @Valid PostModifyReqBody reqBody
     ) {
+
         Post post = postService.findById(id).get();
         postService.modify(post, reqBody.title, reqBody.content);
 

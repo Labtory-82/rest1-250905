@@ -8,8 +8,8 @@ public record PostDto(
         Long id,
         LocalDateTime createDate,
         LocalDateTime modifyDate,
-        String subject,
-        String body
+        String title,
+        String content
 ) {
     // 엔티티 -> DTO 변환 생성자
     public PostDto(Post post) {
